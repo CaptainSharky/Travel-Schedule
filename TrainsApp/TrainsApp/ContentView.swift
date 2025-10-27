@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            testFetchScheduleBetween()
+            testFetchStationSchedule()
         }
     }
 
@@ -46,6 +46,29 @@ struct ContentView: View {
                 print("Successfully fetched schedule between stations: \(schedule)")
             } catch {
                 print("Error fetching schedule between stations: \(error)")
+            }
+        }
+    }
+
+    func testFetchStationSchedule() {
+        Task {
+            do {
+                let client = Client(
+                    serverURL: try Servers.Server1.url(),
+                    transport: URLSessionTransport()
+                )
+
+                let service = StationScheduleService(
+                    client: client,
+                    apikey: apikey
+                )
+
+                print("Fetching station schedule...")
+                let schedule = try await service.getStationSchedule(station: "s9600213")
+
+                print("Successfully fetched station schedule: \(schedule)")
+            } catch {
+                print("Error fetching station schedule: \(error)")
             }
         }
     }
