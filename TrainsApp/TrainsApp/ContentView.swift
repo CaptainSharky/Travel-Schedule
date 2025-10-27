@@ -20,11 +20,37 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            testFetchCopyright()
+            testFetchScheduleBetween()
         }
     }
 
-    func testFetchStations() {
+    func testFetchScheduleBetween() {
+        Task {
+            do {
+                let client = Client(
+                    serverURL: try Servers.Server1.url(),
+                    transport: URLSessionTransport()
+                )
+
+                let service = ScheduleBetweenService(
+                    client: client,
+                    apikey: apikey
+                )
+
+                print("Fetching schedule between stations...")
+                let schedule = try await service.getScheduleBetweenStations(
+                    from: "s9813094",
+                    to: "s9857048"
+                )
+
+                print("Successfully fetched schedule between stations: \(schedule)")
+            } catch {
+                print("Error fetching schedule between stations: \(error)")
+            }
+        }
+    }
+
+    func testFetchNearestStations() {
         Task {
             do {
                 let client = Client(
