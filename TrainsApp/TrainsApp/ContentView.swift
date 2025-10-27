@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            testFetchCarrierInfo()
+            testFetchAllStations()
         }
     }
 
@@ -168,6 +168,29 @@ struct ContentView: View {
                 print("Successfully fetched carrier info: \(carrier)")
             } catch {
                 print("Error fetching carrier info: \(error)")
+            }
+        }
+    }
+
+    func testFetchAllStations() {
+        Task {
+            do {
+                let client = Client(
+                    serverURL: try Servers.Server1.url(),
+                    transport: URLSessionTransport()
+                )
+
+                let service = AllStationsService(
+                    client: client,
+                    apikey: apikey
+                )
+
+                print("Fetching all stations...")
+                let stations = try await service.getAllStations()
+
+                print("Successfully fetched all stations: \(stations)")
+            } catch {
+                print("Error fetching all stations: \(error)")
             }
         }
     }
