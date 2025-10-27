@@ -711,10 +711,8 @@ components:
       properties:
         arrival:
           type: string
-          format: date-time
         departure:
           type: string
-          format: date-time
         stop_time:
           type: integer
           description: Продолжительность остановки в секундах

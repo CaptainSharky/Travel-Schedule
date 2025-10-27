@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            testFetchStationSchedule()
+            testFetchRouteStations()
         }
     }
 
@@ -69,6 +69,29 @@ struct ContentView: View {
                 print("Successfully fetched station schedule: \(schedule)")
             } catch {
                 print("Error fetching station schedule: \(error)")
+            }
+        }
+    }
+
+    func testFetchRouteStations() {
+        Task {
+            do {
+                let client = Client(
+                    serverURL: try Servers.Server1.url(),
+                    transport: URLSessionTransport()
+                )
+
+                let service = RouteStationsService(
+                    client: client,
+                    apikey: apikey
+                )
+
+                print("Fetching route stations...")
+                let stations = try await service.getRouteStations(uid: "FV-5553_251101_c8565_12")
+
+                print("Successfully fetched route stations: \(stations)")
+            } catch {
+                print("Error fetching route stations: \(error)")
             }
         }
     }
