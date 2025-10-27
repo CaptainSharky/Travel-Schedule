@@ -859,9 +859,7 @@ components:
     CarrierResponse:
       type: object
       properties:
-        carriers:
-          type: array
-          items:
+        carrier:
             $ref: '#/components/schemas/Carrier'
     AllStationsResponse:
       type: object

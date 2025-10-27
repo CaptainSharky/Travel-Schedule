@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            testFetchNearestCity()
+            testFetchCarrierInfo()
         }
     }
 
@@ -145,6 +145,29 @@ struct ContentView: View {
                 print("Successfully fetched nearest city: \(city)")
             } catch {
                 print("Error fetching nearest city: \(error)")
+            }
+        }
+    }
+
+    func testFetchCarrierInfo() {
+        Task {
+            do {
+                let client = Client(
+                    serverURL: try Servers.Server1.url(),
+                    transport: URLSessionTransport()
+                )
+
+                let service = CarrierInfoService(
+                    client: client,
+                    apikey: apikey
+                )
+
+                print("Fetching carrier info...")
+                let carrier = try await service.getCarrierInfo(code: "26")
+
+                print("Successfully fetched carrier info: \(carrier)")
+            } catch {
+                print("Error fetching carrier info: \(error)")
             }
         }
     }
