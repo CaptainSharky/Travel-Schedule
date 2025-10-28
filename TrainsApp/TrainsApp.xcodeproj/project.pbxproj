@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EAFE83192EAE4EC900CE2B4D /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = EAFE83182EAE4EC900CE2B4D /* OpenAPIRuntime */; };
+		EAFE831C2EAE4EF200CE2B4D /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = EAFE831B2EAE4EF200CE2B4D /* OpenAPIURLSession */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		EAEBA3942EAE4CE500AB82C7 /* TrainsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrainsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAFE831C2EAE4EF200CE2B4D /* OpenAPIURLSession in Frameworks */,
+				EAFE83192EAE4EC900CE2B4D /* OpenAPIRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,12 +66,15 @@
 			buildRules = (
 			);
 			dependencies = (
+				EA3049DD2EAE52EF00E6EAB0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				EAEBA3962EAE4CE500AB82C7 /* TrainsApp */,
 			);
 			name = TrainsApp;
 			packageProductDependencies = (
+				EAFE83182EAE4EC900CE2B4D /* OpenAPIRuntime */,
+				EAFE831B2EAE4EF200CE2B4D /* OpenAPIURLSession */,
 			);
 			productName = TrainsApp;
 			productReference = EAEBA3942EAE4CE500AB82C7 /* TrainsApp.app */;
@@ -94,6 +104,11 @@
 			);
 			mainGroup = EAEBA38B2EAE4CE500AB82C7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EAFE83122EAE4E5300CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
+				EAFE83172EAE4EC900CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
+				EAFE831A2EAE4EF200CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAEBA3952EAE4CE500AB82C7 /* Products */;
 			projectDirPath = "";
@@ -123,6 +138,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EA3049DD2EAE52EF00E6EAB0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = EA3049DC2EAE52EF00E6EAB0 /* OpenAPIGenerator */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EAEBA39D2EAE4CE600AB82C7 /* Debug */ = {
@@ -259,8 +281,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -274,7 +296,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -291,8 +313,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -306,7 +328,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -332,6 +354,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EAFE83122EAE4E5300CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-generator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.10.3;
+			};
+		};
+		EAFE83172EAE4EC900CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-runtime";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.3;
+			};
+		};
+		EAFE831A2EAE4EF200CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EA3049DC2EAE52EF00E6EAB0 /* OpenAPIGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAFE83122EAE4E5300CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
+			productName = "plugin:OpenAPIGenerator";
+		};
+		EAFE83182EAE4EC900CE2B4D /* OpenAPIRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAFE83172EAE4EC900CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
+			productName = OpenAPIRuntime;
+		};
+		EAFE831B2EAE4EF200CE2B4D /* OpenAPIURLSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAFE831A2EAE4EF200CE2B4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
+			productName = OpenAPIURLSession;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EAEBA38C2EAE4CE500AB82C7 /* Project object */;
 }
