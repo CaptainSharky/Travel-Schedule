@@ -5,20 +5,25 @@ struct MainView: View {
     @State private var to: String? = "Санкт Петербург (Балтийский вокзал)"
 
     var body: some View {
-        DirectionPickerView(
-            fromText: $from,
-            toText: $to,
-            onTapFrom: {
+        ZStack {
+            Color(.ypWhiteDay)
+                .ignoresSafeArea(edges: .top)
 
-            },
-            onTapTo: {
-
-            },
-            onSwap: {
-                swap(&from, &to)
-            }
-        )
-        .padding()
+            DirectionPickerView(
+                fromText: $from,
+                toText: $to,
+                onTapFrom: {
+                    
+                },
+                onTapTo: {
+                    
+                },
+                onSwap: {
+                    swap(&from, &to)
+                }
+            )
+            .padding()
+        }
     }
 }
 
