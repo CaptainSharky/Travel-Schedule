@@ -1,90 +1,47 @@
 import SwiftUI
 
-struct MainView: View {
-    @State private var from: String? = "Москва (Курский вокзал)"
-    @State private var to: String? = "Санкт Петербург (Балтийский вокзал)"
+enum CityDirection: Identifiable, Hashable {
+    case from
+    case to
 
-    var body: some View {
-        ZStack {
-            Color(.ypWhiteDay)
-                .ignoresSafeArea(edges: .top)
-
-            DirectionPickerView(
-                fromText: $from,
-                toText: $to,
-                onTapFrom: {
-                    
-                },
-                onTapTo: {
-                    
-                },
-                onSwap: {
-                    swap(&from, &to)
-                }
-            )
-            .padding()
-        }
-    }
+    var id: Self { self }
 }
 
-struct DirectionPickerView: View {
-    @Binding var fromText: String?
-    @Binding var toText: String?
-
-    let onTapFrom: () -> Void
-    let onTapTo: () -> Void
-    let onSwap: () -> Void
+struct MainView: View {
+    @State private var from: String?
+    @State private var to: String?
+    @State private var activeDirection: CityDirection?
 
     var body: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 20) {
-                tappableRow(
-                    text: fromText,
-                    placeholder: "Откуда",
-                    action: onTapFrom
+        NavigationStack {
+            ZStack {
+                Color(.ypWhiteDay)
+                    .ignoresSafeArea(edges: .top)
+                
+                DirectionPickerView(
+                    fromText: $from,
+                    toText: $to,
+                    onTapFrom: {
+                        activeDirection = .from
+                    },
+                    onTapTo: {
+                        activeDirection = .to
+                    },
+                    onSwap: {
+                        swap(&from, &to)
+                    }
                 )
-                tappableRow(
-                    text: toText,
-                    placeholder: "Куда",
-                    action: onTapTo
-                )
+                .padding()
             }
-            .font(.system(size: 17))
-            .padding(.vertical, 14)
-            .padding(.horizontal, 14)
-            .background(Color(.ypWhite))
-            .cornerRadius(20)
-
-            Button(action: onSwap) {
-                Image(.change)
-                    .foregroundStyle(Color(.ypBlue))
-                    .frame(width: 36, height: 36)
-                    .background(Color(.ypWhite))
-                    .clipShape(Circle())
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(item: $activeDirection) { direction in
+                CitySelectionView(
+                    title: "Выбор города",
+                    selectedCity: direction == .from ? $from : $to
+                )
+                .toolbar(.hidden, for: .tabBar)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 16)
-        .background(Color(.ypBlue))
-        .cornerRadius(20)
-    }
-
-    private func tappableRow(
-        text: String?,
-        placeholder: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack {
-                Text(text ?? placeholder)
-                    .foregroundColor(text == nil
-                                     ? Color(.ypGray)
-                                     : Color(.ypBlack))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
-            }
-        }
-        .buttonStyle(.plain)
     }
 }
 
