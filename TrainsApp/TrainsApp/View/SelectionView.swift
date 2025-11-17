@@ -1,37 +1,28 @@
 import SwiftUI
 
-struct CitySelectionView: View {
+struct SelectionView: View {
     let title: String
-    @Binding var selectedCity: String?
+    let items: [String]
+    let onItemSelected: (String) -> Void
+
     @State private var searchText = ""
     @Environment(\.dismiss) private var dismiss
 
-    @State private var cities: [String] = [
-        "Москва",
-        "Санкт Петербург",
-        "Сочи",
-        "Горный воздух",
-        "Краснодар",
-        "Казань",
-        "Омск"
-    ]
-
-    private var filteredCities: [String] {
-        guard !searchText.isEmpty else { return cities }
-        return cities.filter {
+    private var filteredItems: [String] {
+        guard !searchText.isEmpty else { return items }
+        return items.filter {
             $0.localizedCaseInsensitiveContains(searchText)
         }
     }
 
     var body: some View {
         List {
-            ForEach(filteredCities, id: \.self) { city in
+            ForEach(filteredItems, id: \.self) { item in
                 Button {
-                    selectedCity = city
-                    dismiss()
+                    onItemSelected(item)
                 } label: {
                     HStack {
-                        Text(city)
+                        Text(item)
                             .font(.system(size: 17))
                             .foregroundStyle(.ypBlackDay)
                         Spacer()
@@ -76,6 +67,18 @@ struct CitySelectionView: View {
 
 #Preview {
     NavigationStack {
-        CitySelectionView(title: "Выбор города", selectedCity: .constant(nil))
+        SelectionView(
+            title: "Выбор города",
+            items: [
+                "Москва",
+                "Санкт Петербург",
+                "Сочи",
+                "Горный воздух",
+                "Краснодар",
+                "Казань",
+                "Омск"
+            ],
+            onItemSelected: { _ in }
+        )
     }
 }

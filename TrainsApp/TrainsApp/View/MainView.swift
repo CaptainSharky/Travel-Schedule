@@ -1,19 +1,24 @@
 import SwiftUI
 
-enum CityDirection: Identifiable, Hashable {
+private enum CityDirection: Hashable {
     case from
     case to
+}
 
-    var id: Self { self }
+private enum Route: Hashable {
+    case selectCity(direction: CityDirection)
+    case selectStation(direction: CityDirection, city: City)
 }
 
 struct MainView: View {
     @State private var from: String?
     @State private var to: String?
-    @State private var activeDirection: CityDirection?
+    @State private var path = NavigationPath()
+
+    private let cities = citiesData
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 Color(.ypWhiteDay)
                     .ignoresSafeArea(edges: .top)
@@ -22,10 +27,10 @@ struct MainView: View {
                     fromText: $from,
                     toText: $to,
                     onTapFrom: {
-                        activeDirection = .from
+                        path.append(Route.selectCity(direction: .from))
                     },
                     onTapTo: {
-                        activeDirection = .to
+                        path.append(Route.selectCity(direction: .to))
                     },
                     onSwap: {
                         swap(&from, &to)
@@ -33,17 +38,57 @@ struct MainView: View {
                 )
                 .padding()
             }
-            .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(item: $activeDirection) { direction in
-                CitySelectionView(
-                    title: "Выбор города",
-                    selectedCity: direction == .from ? $from : $to
-                )
-                .toolbar(.hidden, for: .tabBar)
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .selectCity(let direction):
+                    SelectionView(
+                        title: "Выбор города",
+                        items: cities.map { $0.name }
+                    ) { cityName in
+                        guard let city = cities.first(where: { $0.name == cityName }) else { return }
+                        path.append(Route.selectStation(direction: direction, city: city))
+                    }
+                    .toolbar(.hidden, for: .tabBar)
+
+                case .selectStation(let direction, let city):
+                    SelectionView(
+                        title: "Выбор станции",
+                        items: city.stations
+                    ) { stationName in
+                        let fullTitle = "\(city.name) (\(stationName))"
+
+                        switch direction {
+                        case .from:
+                            from = fullTitle
+                        case .to:
+                            to = fullTitle
+                        }
+                        path = NavigationPath()
+                    }
+                    .toolbar(.hidden, for: .tabBar)
+                }
             }
         }
     }
 }
+
+private let citiesData: [City] = [
+    City(name: "Москва", stations: [
+        "Курский вокзал",
+        "Казанский вокзал",
+        "Ленинградский вокзал"
+    ]),
+    City(name: "Санкт Петербург", stations: [
+        "Балтийский вокзал",
+        "Московский вокзал",
+        "Ладожский вокзал"
+    ]),
+    City(name: "Сочи", stations: ["Сочи", "Адлер"]),
+    City(name: "Горный воздух", stations: ["Горный воздух"]),
+    City(name: "Краснодар", stations: ["Краснодар-1", "Краснодар-2"]),
+    City(name: "Казань", stations: ["Казань", "Казань-2"]),
+    City(name: "Омск", stations: ["Омск-Пассажирский"])
+]
 
 #Preview {
     MainView()

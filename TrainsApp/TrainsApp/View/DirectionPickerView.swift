@@ -47,16 +47,14 @@ struct DirectionPickerView: View {
         placeholder: String,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
-            HStack {
-                Text(text ?? placeholder)
-                    .foregroundColor(text == nil
-                                     ? Color(.ypGray)
-                                     : Color(.ypBlack))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
-            }
+        HStack {
+            Text(text ?? placeholder)
+                .foregroundStyle(text == nil ? Color(.ypGray) : Color(.ypBlack))
+                .lineLimit(1)
+            Spacer()
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: action)
     }
 }
