@@ -1,23 +1,24 @@
 import SwiftUI
 
 struct SelectionView: View {
-    let title: String
-    let items: [String]
+    @State private var viewModel: SelectionViewModel
     let onItemSelected: (String) -> Void
 
-    @State private var searchText = ""
     @Environment(\.dismiss) private var dismiss
 
-    private var filteredItems: [String] {
-        guard !searchText.isEmpty else { return items }
-        return items.filter {
-            $0.localizedCaseInsensitiveContains(searchText)
-        }
+    init(
+        viewModel: SelectionViewModel,
+        onItemSelected: @escaping (String) -> Void
+    ) {
+        _viewModel = State(initialValue: viewModel)
+        self.onItemSelected = onItemSelected
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         List {
-            ForEach(filteredItems, id: \.self) { item in
+            ForEach(viewModel.filteredItems, id: \.self) { item in
                 Button {
                     onItemSelected(item)
                 } label: {
@@ -41,7 +42,7 @@ struct SelectionView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(Color(.ypWhiteDay))
-        .navigationTitle(title)
+        .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -57,7 +58,7 @@ struct SelectionView: View {
         }
         .tint(.ypBlackDay)
         .searchable(
-            text: $searchText,
+            text: $viewModel.searchText,
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Введите запрос"
         )
@@ -68,16 +69,18 @@ struct SelectionView: View {
 #Preview {
     NavigationStack {
         SelectionView(
-            title: "Выбор города",
-            items: [
-                "Москва",
-                "Санкт Петербург",
-                "Сочи",
-                "Горный воздух",
-                "Краснодар",
-                "Казань",
-                "Омск"
-            ],
+            viewModel: SelectionViewModel(
+                title: "Выбор города",
+                items: [
+                    "Москва",
+                    "Санкт Петербург",
+                    "Сочи",
+                    "Горный воздух",
+                    "Краснодар",
+                    "Казань",
+                    "Омск"
+                ]
+            ),
             onItemSelected: { _ in }
         )
     }

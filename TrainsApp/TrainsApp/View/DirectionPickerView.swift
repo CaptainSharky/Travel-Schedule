@@ -1,23 +1,21 @@
 import SwiftUI
 
 struct DirectionPickerView: View {
-    @Binding var fromText: String?
-    @Binding var toText: String?
+    @Bindable var viewModel: DirectionPickerViewModel
 
     let onTapFrom: () -> Void
     let onTapTo: () -> Void
-    let onSwap: () -> Void
 
     var body: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 20) {
                 tappableRow(
-                    text: fromText,
+                    text: viewModel.fromText,
                     placeholder: "Откуда",
                     action: onTapFrom
                 )
                 tappableRow(
-                    text: toText,
+                    text: viewModel.toText,
                     placeholder: "Куда",
                     action: onTapTo
                 )
@@ -28,7 +26,7 @@ struct DirectionPickerView: View {
             .background(Color(.ypWhite))
             .cornerRadius(20)
 
-            Button(action: onSwap) {
+            Button(action: { viewModel.swap() }) {
                 Image(.change)
                     .foregroundStyle(Color(.ypBlue))
                     .frame(width: 36, height: 36)
@@ -57,4 +55,15 @@ struct DirectionPickerView: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: action)
     }
+}
+
+#Preview {
+    DirectionPickerView(
+        viewModel: DirectionPickerViewModel(
+            fromText: "Москва (Курский вокзал)",
+            toText: nil
+        ),
+        onTapFrom: { },
+        onTapTo: { }
+    )
 }
