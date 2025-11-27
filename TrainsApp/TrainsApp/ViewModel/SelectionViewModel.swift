@@ -5,6 +5,7 @@ import Observation
     let title: String
     let items: [String]
     var searchText: String = ""
+    let emptyStateText: String
 
     var filteredItems: [String] {
         guard !searchText.isEmpty else { return items }
@@ -13,8 +14,13 @@ import Observation
         }
     }
 
-    init(title: String, items: [String]) {
+    var shouldShowEmptyState: Bool {
+        filteredItems.isEmpty && !searchText.isEmpty
+    }
+
+    init(title: String, items: [String], emptyStateText: String) {
         self.title = title
         self.items = items
+        self.emptyStateText = emptyStateText
     }
 }

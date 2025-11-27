@@ -9,7 +9,7 @@ struct MainView: View {
         NavigationStack(path: $viewModel.path) {
             ZStack {
                 Color(.ypWhiteDay)
-                    .ignoresSafeArea(edges: .top)
+                    .ignoresSafeArea()
                 
                 DirectionPickerView(
                     viewModel: viewModel.directionPickerViewModel,
@@ -28,7 +28,8 @@ struct MainView: View {
                     SelectionView(
                         viewModel: SelectionViewModel(
                             title: "Выбор города",
-                            items: viewModel.cities.map { $0.name }
+                            items: viewModel.cities.map { $0.name },
+                            emptyStateText: "Город не найден"
                         ),
                         onItemSelected: { cityName in
                             viewModel.didSelectCity(
@@ -43,7 +44,8 @@ struct MainView: View {
                     SelectionView(
                         viewModel: SelectionViewModel(
                             title: "Выбор станции",
-                            items: city.stations
+                            items: city.stations,
+                            emptyStateText: "Станция не найдена"
                         ),
                         onItemSelected: { stationName in
                             viewModel.didSelectStation(

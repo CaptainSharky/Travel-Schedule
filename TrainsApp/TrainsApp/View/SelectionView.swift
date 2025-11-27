@@ -42,6 +42,16 @@ struct SelectionView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(Color(.ypWhiteDay))
+        .overlay {
+            if viewModel.shouldShowEmptyState {
+                Text(viewModel.emptyStateText)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(Color(.ypBlackDay))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .allowsHitTesting(false)
+            }
+        }
         .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
@@ -79,7 +89,8 @@ struct SelectionView: View {
                     "Краснодар",
                     "Казань",
                     "Омск"
-                ]
+                ],
+                emptyStateText: "Город не найден"
             ),
             onItemSelected: { _ in }
         )
