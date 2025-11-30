@@ -11,16 +11,31 @@ struct MainView: View {
                 Color(.ypWhiteDay)
                     .ignoresSafeArea()
                 
-                DirectionPickerView(
-                    viewModel: viewModel.directionPickerViewModel,
-                    onTapFrom: {
-                        viewModel.tapFrom()
-                    },
-                    onTapTo: {
-                        viewModel.tapTo()
+                VStack(spacing: 16) {
+                    DirectionPickerView(
+                        viewModel: viewModel.directionPickerViewModel,
+                        onTapFrom: {
+                            viewModel.tapFrom()
+                        },
+                        onTapTo: {
+                            viewModel.tapTo()
+                        }
+                    )
+                    .padding(.horizontal, 16)
+
+                    if viewModel.isSearchButtonEnabled {
+                        Button {
+
+                        } label: {
+                            Text("Найти")
+                                .font(.system(size: 17, weight: .bold))
+                                .frame(width: 150, height: 60)
+                                .background(Color(.ypBlue))
+                                .foregroundStyle(Color(.ypWhite))
+                                .cornerRadius(16)
+                        }
                     }
-                )
-                .padding()
+                }
             }
             .navigationDestination(for: MainViewModel.Route.self) { route in
                 switch route {

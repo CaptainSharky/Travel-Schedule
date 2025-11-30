@@ -15,6 +15,14 @@ import SwiftUI
     var cities: [City]
     var directionPickerViewModel: DirectionPickerViewModel
 
+    var isSearchButtonEnabled: Bool {
+        guard
+            let fromText = directionPickerViewModel.fromText,
+            let toText = directionPickerViewModel.toText
+        else { return false }
+        return !fromText.isEmpty && !toText.isEmpty
+    }
+
     init(directionPickerViewModel: DirectionPickerViewModel = DirectionPickerViewModel()) {
         cities = citiesMockData
         self.directionPickerViewModel = directionPickerViewModel
