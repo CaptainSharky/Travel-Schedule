@@ -7,7 +7,7 @@ struct TabBar: View {
                 .tabItem {
                     Image(.tabMain)
                 }
-            Text("Настройки")
+            ErrorView(viewModel: ErrorViewModel(errorType: .serverError))
                 .tabItem {
                     Image(.tabSettings)
                 }
