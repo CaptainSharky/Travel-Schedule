@@ -13,7 +13,7 @@ struct TrainsAppApp: App {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(resource: .ypWhiteDay)
-        appearance.shadowColor = UIColor.systemGray4
+        appearance.shadowColor = UIColor(resource: .ypSeparator)
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 

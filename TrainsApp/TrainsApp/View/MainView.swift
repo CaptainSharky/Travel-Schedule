@@ -25,7 +25,7 @@ struct MainView: View {
 
                     if viewModel.isSearchButtonEnabled {
                         Button {
-
+                            viewModel.search()
                         } label: {
                             Text("Найти")
                                 .font(.system(size: 17, weight: .bold))
@@ -69,6 +69,14 @@ struct MainView: View {
                                 in: city
                             )
                         }
+                    )
+                    .toolbar(.hidden, for: .tabBar)
+
+                case .carriersList(let title):
+                    CarriersListView(
+                        viewModel: CarriersListViewModel(
+                            routeTitle: title, items: []
+                        )
                     )
                     .toolbar(.hidden, for: .tabBar)
                 }

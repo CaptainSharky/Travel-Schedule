@@ -9,6 +9,7 @@ import SwiftUI
     enum Route: Hashable {
         case selectCity(direction: CityDirection)
         case selectStation(direction: CityDirection, city: City)
+        case carriersList(title: String)
     }
 
     var path = NavigationPath()
@@ -73,5 +74,17 @@ import SwiftUI
         }
 
         path = NavigationPath()
+    }
+
+    func search() {
+        guard
+            let from = directionPickerViewModel.fromText,
+            let to = directionPickerViewModel.toText,
+            !from.isEmpty,
+            !to.isEmpty
+        else { return }
+
+        let title = "\(from) → \(to)"
+        path.append(Route.carriersList(title: title))
     }
 }
