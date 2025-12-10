@@ -23,6 +23,24 @@ struct CarriersListView: View {
                     }
                 }
             }
+
+            VStack {
+                Spacer()
+
+                Button {
+
+                } label: {
+                    Text("Уточнить время")
+                        .font(.system(size: 17, weight: .bold))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+                        .background(Color(.ypBlue))
+                        .foregroundStyle(Color(.ypWhite))
+                        .cornerRadius(16)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
         }
         .overlay {
             if viewModel.shouldShowEmptyState {
