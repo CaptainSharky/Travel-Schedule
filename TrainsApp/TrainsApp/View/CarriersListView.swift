@@ -23,20 +23,40 @@ struct CarriersListView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 100)
+            }
 
             VStack {
                 Spacer()
 
-                Button {
-
+                NavigationLink {
+                    CarriersFilterView(
+                        initialRanges: viewModel.activeDepartureRanges,
+                        initialTransfers: viewModel.activeTransfersFilter
+                    ) { ranges, transfers in
+                        viewModel.applyFilters(
+                            timeRanges: ranges,
+                            transfers: transfers
+                        )
+                    }
                 } label: {
-                    Text("Уточнить время")
-                        .font(.system(size: 17, weight: .bold))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 60)
-                        .background(Color(.ypBlue))
-                        .foregroundStyle(Color(.ypWhite))
-                        .cornerRadius(16)
+                    HStack(spacing: 4) {
+                        Text("Уточнить время")
+                            .font(.system(size: 17, weight: .bold))
+
+                        if viewModel.hasActiveFilters {
+                            Circle()
+                                .fill(Color(.ypRed))
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                    .font(.system(size: 17, weight: .bold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 60)
+                    .background(Color(.ypBlue))
+                    .foregroundStyle(Color(.ypWhite))
+                    .cornerRadius(16)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
@@ -72,8 +92,7 @@ struct CarriersListView: View {
     NavigationStack {
         CarriersListView(
             viewModel: CarriersListViewModel(
-                routeTitle: "Москва (Ярославский вокзал) → Санкт Петербург (Балтийский вокзал)",
-                items: []
+                routeTitle: "Москва (Ярославский вокзал) → Санкт Петербург (Балтийский вокзал)"
             )
         )
     }

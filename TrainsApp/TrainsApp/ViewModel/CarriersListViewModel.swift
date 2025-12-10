@@ -2,13 +2,22 @@ import Observation
 
 @Observable final class CarriersListViewModel {
     let routeTitle: String
-    let items: [CarrierRoute]
+    var items: [CarrierRoute]
+
+    private let allItems: [CarrierRoute]
+
+    var activeDepartureRanges: Set<DepartureTimeRange> = []
+    var activeTransfersFilter: TransfersFilter? = nil
 
     var shouldShowEmptyState: Bool {
         items.isEmpty
     }
 
-    let itemsMock = [
+    var hasActiveFilters: Bool {
+        !activeDepartureRanges.isEmpty || activeTransfersFilter != nil
+    }
+
+    private let itemsMock = [
         CarrierRoute(
             carrierName: "РЖД",
             logoImageName: "rzd_logo",
@@ -56,8 +65,48 @@ import Observation
         )
     ]
 
-    init(routeTitle: String, items: [CarrierRoute]) {
+    init(routeTitle: String, items: [CarrierRoute]? = nil) {
         self.routeTitle = routeTitle
-        self.items = itemsMock
+        allItems = items ?? itemsMock
+        self.items = allItems
+    }
+
+    func applyFilters(timeRanges: Set<DepartureTimeRange>, transfers: TransfersFilter?) {
+        activeDepartureRanges = timeRanges
+        activeTransfersFilter = transfers
+
+        guard !timeRanges.isEmpty || transfers != nil else {
+            items = allItems
+            return
+        }
+
+        items = allItems.filter { route in
+            if !timeRanges.isEmpty {
+                guard let minutes = route.departureMinutes else { return false }
+                let matchesTime = timeRanges.contains { $0.contains(minutes: minutes) }
+                if !matchesTime { return false }
+            }
+
+            /*if let transfers = transfers {
+                let hasTransfer = route.hasTransfer
+                switch transfers {
+                case .yes where !hasTransfer:
+                    return false
+                case .no where hasTransfer:
+                    return false
+                default:
+                    break
+                }
+            }*/
+
+            if transfers == .no {
+                let hasTransfer = route.hasTransfer
+                if hasTransfer {
+                    return false
+                }
+            }
+
+            return true
+        }
     }
 }

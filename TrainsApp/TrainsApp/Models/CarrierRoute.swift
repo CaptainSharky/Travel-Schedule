@@ -10,3 +10,17 @@ struct CarrierRoute: Identifiable, Hashable {
     let arrivalTime: String
     let durationText: String
 }
+
+extension CarrierRoute {
+    var departureMinutes: Int? {
+        let parts = departureTime.split(separator: ":")
+        guard parts.count == 2,
+              let hours = Int(parts[0]),
+              let minutes = Int(parts[1]) else { return nil }
+        return hours * 60 + minutes
+    }
+
+    var hasTransfer: Bool {
+        transferDescription != nil
+    }
+}

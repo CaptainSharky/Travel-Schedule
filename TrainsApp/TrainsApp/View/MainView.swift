@@ -75,7 +75,7 @@ struct MainView: View {
                 case .carriersList(let title):
                     CarriersListView(
                         viewModel: CarriersListViewModel(
-                            routeTitle: title, items: []
+                            routeTitle: title
                         )
                     )
                     .toolbar(.hidden, for: .tabBar)
