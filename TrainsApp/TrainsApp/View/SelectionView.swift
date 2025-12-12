@@ -15,8 +15,6 @@ struct SelectionView: View {
     }
 
     var body: some View {
-        @Bindable var viewModel = viewModel
-
         List {
             ForEach(viewModel.filteredItems, id: \.self) { item in
                 Button {

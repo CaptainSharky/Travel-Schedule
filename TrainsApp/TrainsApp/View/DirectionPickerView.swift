@@ -21,8 +21,7 @@ struct DirectionPickerView: View {
                 )
             }
             .font(.system(size: 17))
-            .padding(.vertical, 14)
-            .padding(.horizontal, 14)
+            .padding(14)
             .background(Color(.ypWhite))
             .cornerRadius(20)
 

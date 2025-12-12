@@ -7,7 +7,7 @@ import Observation
     private let allItems: [CarrierRoute]
 
     var activeDepartureRanges: Set<DepartureTimeRange> = []
-    var activeTransfersFilter: TransfersFilter? = nil
+    var activeTransfersFilter: TransfersFilter?
 
     var shouldShowEmptyState: Bool {
         items.isEmpty
@@ -86,18 +86,6 @@ import Observation
                 let matchesTime = timeRanges.contains { $0.contains(minutes: minutes) }
                 if !matchesTime { return false }
             }
-
-            /*if let transfers = transfers {
-                let hasTransfer = route.hasTransfer
-                switch transfers {
-                case .yes where !hasTransfer:
-                    return false
-                case .no where hasTransfer:
-                    return false
-                default:
-                    break
-                }
-            }*/
 
             if transfers == .no {
                 let hasTransfer = route.hasTransfer

@@ -4,8 +4,6 @@ struct MainView: View {
     @State private var viewModel = MainViewModel()
 
     var body: some View {
-        @Bindable var viewModel = viewModel
-
         NavigationStack(path: $viewModel.path) {
             ZStack {
                 Color(.ypWhiteDay)

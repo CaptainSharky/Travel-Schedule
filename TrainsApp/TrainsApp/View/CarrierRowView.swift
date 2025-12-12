@@ -64,7 +64,7 @@ struct CarrierRowView: View {
         }
         .padding(16)
         .background(Color(.ypLightGray))
-        .cornerRadius(24)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
     }
 }
 
