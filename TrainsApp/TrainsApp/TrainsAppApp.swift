@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct TrainsAppApp: App {
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(resource: .ypWhiteDay)
+        appearance.shadowColor = UIColor(resource: .ypSeparator)
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabBar()
         }
     }
 }
