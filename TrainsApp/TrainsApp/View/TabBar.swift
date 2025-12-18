@@ -7,10 +7,13 @@ struct TabBar: View {
                 .tabItem {
                     Image(.tabMain)
                 }
-            SettingsView()
-                .tabItem {
-                    Image(.tabSettings)
-                }
+
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Image(.tabSettings)
+            }
         }
         .tint(.ypBlackDay)
     }

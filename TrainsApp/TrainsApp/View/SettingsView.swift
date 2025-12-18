@@ -24,8 +24,9 @@ struct SettingsView: View {
                     .frame(height: 60)
                     .padding(.horizontal, 16)
 
-                    Button {
-
+                    NavigationLink {
+                        AgreementView()
+                            .toolbar(.hidden, for: .tabBar)
                     } label: {
                         HStack {
                             Text("Пользовательское соглашение")
@@ -64,5 +65,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    NavigationStack {
+        SettingsView()
+    }
 }
