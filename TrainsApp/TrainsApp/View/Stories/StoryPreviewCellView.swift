@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StoryPreviewCellView: View {
-    let story: StoryPreview
+    let story: Story
 
     private let cornerRadius: CGFloat = 16
     private let borderWidth: CGFloat = 4
@@ -48,8 +48,8 @@ struct StoryPreviewCellView: View {
     ZStack {
         Color(.ypWhiteDay).ignoresSafeArea()
         HStack(spacing: 12) {
-            StoryPreviewCellView(story: .init(id: UUID(), imageName: "story_1", title: "Text Text\nText Text\nText Text Text Text Text Text", isViewed: false))
-            StoryPreviewCellView(story: .init(id: UUID(), imageName: "story_3", title: "Text Text\nText Text\nText Text ...", isViewed: true))
+            StoryPreviewCellView(story: Story.mock[0])
+            StoryPreviewCellView(story: Story.mock[1])
         }
         .padding()
     }

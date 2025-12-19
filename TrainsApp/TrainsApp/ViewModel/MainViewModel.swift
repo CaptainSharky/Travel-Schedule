@@ -15,7 +15,7 @@ import SwiftUI
     var path = NavigationPath()
     var cities: [City]
     var directionPickerViewModel: DirectionPickerViewModel
-    var stories: [StoryPreview] = StoryPreview.mock
+    var stories: [Story] = Story.mock
 
     var isSearchButtonEnabled: Bool {
         guard

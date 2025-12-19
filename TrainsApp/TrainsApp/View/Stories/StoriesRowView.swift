@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct StoriesRowView: View {
-    let stories: [StoryPreview]
+    let stories: [Story]
+    let onTapStory: (Story) -> Void
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 12) {
                 ForEach(stories) { story in
                     StoryPreviewCellView(story: story)
-                        .onTapGesture { }
+                        .onTapGesture {
+                            onTapStory(story)
+                        }
                 }
             }
         }
@@ -20,5 +23,5 @@ struct StoriesRowView: View {
 
 
 #Preview {
-    StoriesRowView(stories: StoryPreview.mock)
+    StoriesRowView(stories: Story.mock, onTapStory: { _ in })
 }
