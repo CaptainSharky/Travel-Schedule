@@ -5,11 +5,15 @@ struct MainView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            ZStack {
+            ZStack(alignment: .top) {
                 Color(.ypWhiteDay)
                     .ignoresSafeArea()
-                
-                VStack(spacing: 16) {
+
+                VStack(spacing: 0) {
+                    StoriesRowView(stories: viewModel.stories)
+                        .padding(.top, 24)
+                        .padding(.bottom, 44)
+
                     DirectionPickerView(
                         viewModel: viewModel.directionPickerViewModel,
                         onTapFrom: {

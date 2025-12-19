@@ -21,6 +21,7 @@ struct AgreementView: View {
                     Text(agreementText)
                         .font(.system(size: 17, weight: .regular))
                 }
+                .padding(.top, 16)
             }
             .padding(.horizontal, 16)
         }
