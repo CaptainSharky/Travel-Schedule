@@ -9,10 +9,10 @@ struct MainView: View {
                 Color(.ypWhiteDay)
                     .ignoresSafeArea()
 
-                VStack(spacing: 0) {
+                VStack(spacing: 16) {
                     StoriesRowView(stories: viewModel.stories)
                         .padding(.top, 24)
-                        .padding(.bottom, 44)
+                        .padding(.bottom, 28)
 
                     DirectionPickerView(
                         viewModel: viewModel.directionPickerViewModel,
