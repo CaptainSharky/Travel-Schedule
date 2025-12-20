@@ -20,8 +20,9 @@ struct DirectionPickerView: View {
                     action: onTapTo
                 )
             }
-            .font(.system(size: 17))
-            .padding(14)
+            .font(.system(size: 17, weight: .regular))
+            .padding(.vertical, 14)
+            .padding(.horizontal, 16)
             .background(Color(.ypWhite))
             .cornerRadius(20)
 
@@ -33,8 +34,7 @@ struct DirectionPickerView: View {
                     .clipShape(Circle())
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 16)
+        .padding(16)
         .background(Color(.ypBlue))
         .cornerRadius(20)
     }
