@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 @Observable final class MainViewModel {
     enum CityDirection: Hashable {
         case from
@@ -9,11 +10,22 @@ import SwiftUI
     enum Route: Hashable {
         case selectCity(direction: CityDirection)
         case selectStation(direction: CityDirection, city: City)
-        case carriersList(title: String)
+        case carriersList(
+            title: String,
+            from: DirectionPickerViewModel.SelectedStation,
+            to: DirectionPickerViewModel.SelectedStation
+        )
+        case error(type: ErrorViewModel.ErrorType)
     }
 
     var path = NavigationPath()
-    var cities: [City]
+
+    var cities: [City] = []
+    var isLoadingCities: Bool = false
+    var citiesLoadError: String?
+    var citiesLoadErrorType: ErrorViewModel.ErrorType?
+    var scheduleLoadErrorType: ErrorViewModel.ErrorType?
+
     var directionPickerViewModel: DirectionPickerViewModel
     var stories: [Story] = Story.mock
 
@@ -25,67 +37,155 @@ import SwiftUI
         return !fromText.isEmpty && !toText.isEmpty
     }
 
-    init(directionPickerViewModel: DirectionPickerViewModel = DirectionPickerViewModel()) {
-        cities = citiesMockData
+    private let api: RaspAPIClient
+
+    init(
+        directionPickerViewModel: DirectionPickerViewModel = DirectionPickerViewModel(),
+        api: RaspAPIClient = RaspAPIClient(apiKey: AppConfig.apiKey),
+    ) {
         self.directionPickerViewModel = directionPickerViewModel
+        self.api = api
     }
 
-    private let citiesMockData: [City] = [
-        City(name: "Москва", stations: [
-            "Киевский вокзал",
-            "Курский вокзал",
-            "Ярославский вокзал",
-            "Белорусский вокзал",
-            "Савеловский вокзал",
-            "Ленинградский вокзал"
-        ]),
-        City(name: "Санкт Петербург", stations: [
-            "Балтийский вокзал",
-            "Московский вокзал",
-            "Ладожский вокзал"
-        ]),
-        City(name: "Сочи", stations: ["Сочи", "Адлер"]),
-        City(name: "Горный воздух", stations: ["Горный воздух"]),
-        City(name: "Краснодар", stations: ["Краснодар-1", "Краснодар-2"]),
-        City(name: "Казань", stations: ["Казань", "Казань-2"]),
-        City(name: "Омск", stations: ["Омск-Пассажирский"])
-    ]
-
     func tapFrom() {
-        path.append(Route.selectCity(direction: .from))
+        if cities.isEmpty, let type = citiesLoadErrorType {
+            path.append(Route.error(type: type))
+        } else {
+            path.append(Route.selectCity(direction: .from))
+        }
     }
 
     func tapTo() {
-        path.append(Route.selectCity(direction: .to))
+        if cities.isEmpty, let type = citiesLoadErrorType {
+            path.append(Route.error(type: type))
+        } else {
+            path.append(Route.selectCity(direction: .to))
+        }
     }
 
-    func didSelectCity(named cityName: String, for direction: CityDirection) {
-        guard let city = cities.first(where: { $0.name == cityName }) else { return }
+    func didSelectCity(_ city: City, for direction: CityDirection) {
         path.append(Route.selectStation(direction: direction, city: city))
     }
 
-    func didSelectStation(_ stationName: String, direction: CityDirection, in city: City) {
-        let fullTitle = "\(city.name) (\(stationName))"
+    func didSelectStation(_ station: Station, direction: CityDirection) {
+        let selected = DirectionPickerViewModel.SelectedStation(
+            code: station.code,
+            cityName: station.cityName,
+            stationName: station.title
+        )
 
         switch direction {
         case .from:
-            directionPickerViewModel.fromText = fullTitle
+            directionPickerViewModel.from = selected
         case .to:
-            directionPickerViewModel.toText = fullTitle
+            directionPickerViewModel.to = selected
         }
 
         path = NavigationPath()
     }
 
     func search() {
+        Task {
+            await searchAsync()
+        }
+    }
+
+    private func searchAsync() async {
         guard
-            let from = directionPickerViewModel.fromText,
-            let to = directionPickerViewModel.toText,
-            !from.isEmpty,
-            !to.isEmpty
+            let from = directionPickerViewModel.from,
+            let to = directionPickerViewModel.to
         else { return }
 
-        let title = "\(from) → \(to)"
-        path.append(Route.carriersList(title: title))
+        do {
+            _ = try await api.fetchScheduleBetweenStations(from: from.code, to: to.code)
+            scheduleLoadErrorType = nil
+
+            let title = "\(from.displayTitle) → \(to.displayTitle)"
+            path.append(Route.carriersList(title: title, from: from, to: to))
+        } catch {
+            let type = ErrorViewModel.mapToErrorType(error)
+            scheduleLoadErrorType = type
+            path.append(Route.error(type: type))
+        }
+    }
+
+
+    func makeCarriersListViewModel(
+        title: String,
+        from: DirectionPickerViewModel.SelectedStation,
+        to: DirectionPickerViewModel.SelectedStation
+    ) -> CarriersListViewModel {
+        CarriersListViewModel(
+            routeTitle: title,
+            from: from.code,
+            to: to.code,
+            apiClient: api
+        )
+    }
+
+    // MARK: - Loading
+
+    func loadCitiesIfNeeded() async {
+        guard cities.isEmpty, !isLoadingCities else { return }
+
+        isLoadingCities = true
+        citiesLoadError = nil
+        citiesLoadErrorType = nil
+        defer { isLoadingCities = false }
+
+        do {
+            async let nearest = api.fetchNearestStations(
+                lat: 55.755864,
+                lng: 37.617698,
+                distance: 50
+            )
+
+            let response = try await nearest
+            let preparedCities = Self.makeCities(from: response)
+
+            self.cities = preparedCities.sorted { $0.name < $1.name }
+        } catch {
+            self.citiesLoadError = String(describing: error)
+            self.citiesLoadErrorType = ErrorViewModel.mapToErrorType(error)
+            self.cities = []
+        }
+    }
+
+    func showError(_ type: ErrorViewModel.ErrorType) {
+        path.append(Route.error(type: type))
+    }
+
+    // MARK: - Mapping OpenAPI -> Domain
+
+    nonisolated private static func makeCities(from nearest: NearestStations) -> [City] {
+        let apiStations = nearest.stations ?? []
+
+        var grouped: [String: [Station]] = [:]
+        grouped.reserveCapacity(16)
+
+        for s in apiStations {
+            let rawTitle = (s.title ?? s.popular_title ?? s.short_title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let code = (s.code ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !rawTitle.isEmpty, !code.isEmpty else { continue }
+
+            let (city, stationName) = StationTitleParser.splitCityAndStation(from: rawTitle)
+            let station = Station(code: code, title: stationName, cityName: city)
+
+            grouped[city, default: []].append(station)
+        }
+
+        return grouped
+            .map { (cityName, stations) in
+                City(
+                    name: cityName,
+                    stations: stations.sorted { $0.title < $1.title }
+                )
+            }
     }
 }
+
+enum AppConfig {
+    static let apiKey = "bb6ebbc8-d4ec-44d1-a927-87d67ced6345"
+}
+
