@@ -8,7 +8,7 @@ struct DirectionPickerView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 24) {
                 tappableRow(
                     text: viewModel.fromText,
                     placeholder: "Откуда",
