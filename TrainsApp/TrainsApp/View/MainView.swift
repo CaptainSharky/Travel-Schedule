@@ -2,14 +2,34 @@ import SwiftUI
 
 struct MainView: View {
     @State private var viewModel = MainViewModel()
+    @State private var isStoriesPresented = false
+    @State private var selectedStoryID: UUID?
+    @State private var selectedStory: Story? = nil
+
+    private var storiesBinding: Binding<[Story]> {
+        Binding(
+            get: { viewModel.stories },
+            set: { viewModel.stories = $0 }
+        )
+    }
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            ZStack {
+            ZStack(alignment: .top) {
                 Color(.ypWhiteDay)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 16) {
+                    StoriesRowView(stories: viewModel.stories) { story in
+                        guard story.isViewed == false else { return }
+                        selectedStory = story
+                    }
+                    .fullScreenCover(item: $selectedStory) { story in
+                        StoriesViewerView(stories: storiesBinding, startStoryID: story.id)
+                    }
+                    .padding(.top, 24)
+                    .padding(.bottom, 28)
+
                     DirectionPickerView(
                         viewModel: viewModel.directionPickerViewModel,
                         onTapFrom: {
@@ -33,6 +53,15 @@ struct MainView: View {
                                 .cornerRadius(16)
                         }
                     }
+                }
+            }
+            .fullScreenCover(isPresented: $isStoriesPresented, onDismiss: {
+                selectedStoryID = nil
+            }) {
+                if let id = selectedStoryID {
+                    StoriesViewerView(stories: storiesBinding, startStoryID: id)
+                } else {
+                    Color.black.ignoresSafeArea()
                 }
             }
             .navigationDestination(for: MainViewModel.Route.self) { route in

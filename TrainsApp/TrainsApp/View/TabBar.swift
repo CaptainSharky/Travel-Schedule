@@ -7,10 +7,13 @@ struct TabBar: View {
                 .tabItem {
                     Image(.tabMain)
                 }
-            ErrorView(viewModel: ErrorViewModel(errorType: .serverError))
-                .tabItem {
-                    Image(.tabSettings)
-                }
+
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Image(.tabSettings)
+            }
         }
         .tint(.ypBlackDay)
     }

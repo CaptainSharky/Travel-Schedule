@@ -2,8 +2,7 @@ import Foundation
 
 struct CarrierRoute: Identifiable, Hashable {
     let id = UUID()
-    let carrierName: String
-    let logoImageName: String
+    let carrier: Carrier
     let transferDescription: String?
     let dateText: String
     let departureTime: String

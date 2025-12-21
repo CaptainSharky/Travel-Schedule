@@ -18,9 +18,15 @@ struct CarriersListView: View {
                         .padding(16)
 
                     ForEach(viewModel.items) { item in
-                        CarrierRowView(item: item)
-                            .padding(.horizontal, 16)
+                        NavigationLink {
+                            CarrierInfoView(carrier: item.carrier)
+                        } label: {
+                            CarrierRowView(item: item)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
                     }
+
                 }
             }
             .safeAreaInset(edge: .bottom) {

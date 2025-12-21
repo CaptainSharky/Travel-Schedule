@@ -6,14 +6,14 @@ struct CarrierRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 8) {
-                Image(item.logoImageName)
+                Image(item.carrier.smallLogoAssetName)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 38, height: 38)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.carrierName)
+                    Text(item.carrier.shortName)
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.ypBlack)
 
@@ -71,8 +71,14 @@ struct CarrierRowView: View {
 #Preview {
     CarrierRowView(
         item: CarrierRoute(
-            carrierName: "РЖД",
-            logoImageName: "rzd_logo",
+            carrier: Carrier(
+                shortName: "РЖД",
+                fullName: "ОАО «РЖД»",
+                email: "i.lozgkina@yandex.ru",
+                phone: "+7 (904) 329-27-71",
+                smallLogoAssetName: "rzd_logo",
+                largeLogoAssetName: "rzd_logo"
+            ),
             transferDescription: "С пересадкой в Костроме",
             dateText: "14 января",
             departureTime: "22:30",

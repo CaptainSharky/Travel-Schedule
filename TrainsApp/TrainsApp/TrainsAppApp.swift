@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct TrainsAppApp: App {
+    @AppStorage("isDarkThemeEnabled") private var isDarkThemeEnabled = false
+
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -20,6 +22,7 @@ struct TrainsAppApp: App {
     var body: some Scene {
         WindowGroup {
             TabBar()
+                .preferredColorScheme(isDarkThemeEnabled ? .dark : .light)
         }
     }
 }
