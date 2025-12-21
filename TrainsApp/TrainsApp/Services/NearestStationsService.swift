@@ -24,7 +24,7 @@ final class NearestStationsService: NearestStationsServiceProtocol {
             lng: lng,
             distance: distance,
             transport_types: "train,suburban",
-            limit: 20
+            limit: 30
         ))
         return try response.ok.body.json
     }

@@ -19,4 +19,26 @@ import SwiftUI
             image = Image(.errorInternet)
         }
     }
+
+    static func mapToErrorType(_ error: Error) -> ErrorViewModel.ErrorType {
+        if let urlError = error as? URLError {
+            return isNoInternet(urlError) ? .noInternet : .serverError
+        }
+
+        return .serverError
+    }
+
+    nonisolated private static func isNoInternet(_ error: URLError) -> Bool {
+        switch error.code {
+        case .notConnectedToInternet,
+             .networkConnectionLost,
+             .cannotConnectToHost,
+             .cannotFindHost,
+             .dnsLookupFailed,
+             .internationalRoamingOff:
+            return true
+        default:
+            return false
+        }
+    }
 }

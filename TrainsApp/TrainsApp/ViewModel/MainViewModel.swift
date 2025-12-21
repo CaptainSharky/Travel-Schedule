@@ -11,6 +11,7 @@ import SwiftUI
         case selectCity(direction: CityDirection)
         case selectStation(direction: CityDirection, city: City)
         case carriersList(title: String)
+        case error(type: ErrorViewModel.ErrorType)
     }
 
     var path = NavigationPath()
@@ -18,6 +19,7 @@ import SwiftUI
     var cities: [City] = []
     var isLoadingCities: Bool = false
     var citiesLoadError: String?
+    var citiesLoadErrorType: ErrorViewModel.ErrorType?
 
     var directionPickerViewModel: DirectionPickerViewModel
     var stories: [Story] = Story.mock
@@ -41,11 +43,19 @@ import SwiftUI
     }
 
     func tapFrom() {
-        path.append(Route.selectCity(direction: .from))
+        if cities.isEmpty, let type = citiesLoadErrorType {
+            path.append(Route.error(type: type))
+        } else {
+            path.append(Route.selectCity(direction: .from))
+        }
     }
 
     func tapTo() {
-        path.append(Route.selectCity(direction: .to))
+        if cities.isEmpty, let type = citiesLoadErrorType {
+            path.append(Route.error(type: type))
+        } else {
+            path.append(Route.selectCity(direction: .to))
+        }
     }
 
     func didSelectCity(_ city: City, for direction: CityDirection) {
@@ -88,6 +98,7 @@ import SwiftUI
 
         isLoadingCities = true
         citiesLoadError = nil
+        citiesLoadErrorType = nil
         defer { isLoadingCities = false }
 
         do {
@@ -103,6 +114,7 @@ import SwiftUI
             self.cities = preparedCities.sorted { $0.name < $1.name }
         } catch {
             self.citiesLoadError = String(describing: error)
+            self.citiesLoadErrorType = ErrorViewModel.mapToErrorType(error)
             self.cities = []
         }
     }

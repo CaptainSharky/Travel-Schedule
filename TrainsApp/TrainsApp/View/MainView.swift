@@ -111,6 +111,10 @@ struct MainView: View {
                         )
                     )
                     .toolbar(.hidden, for: .tabBar)
+
+                case .error(let errorType):
+                    ErrorView(viewModel: ErrorViewModel(errorType: errorType))
+                        .toolbar(.hidden, for: .tabBar)
                 }
             }
         }
