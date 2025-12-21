@@ -58,10 +58,7 @@ struct DirectionPickerView: View {
 
 #Preview {
     DirectionPickerView(
-        viewModel: DirectionPickerViewModel(
-            fromText: "Москва (Курский вокзал)",
-            toText: nil
-        ),
+        viewModel: DirectionPickerViewModel(),
         onTapFrom: { },
         onTapTo: { }
     )

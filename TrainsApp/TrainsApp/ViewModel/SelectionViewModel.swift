@@ -1,16 +1,20 @@
 import Foundation
 import Observation
 
-@Observable final class SelectionViewModel {
-    let title: String
-    let items: [String]
-    var searchText: String = ""
-    let emptyStateText: String
+@MainActor
+@Observable final class SelectionViewModel<Item: Identifiable & Hashable> {
 
-    var filteredItems: [String] {
+    let title: String
+    let items: [Item]
+    let emptyStateText: String
+    let itemTitle: (Item) -> String
+
+    var searchText: String = ""
+
+    var filteredItems: [Item] {
         guard !searchText.isEmpty else { return items }
-        return items.filter {
-            $0.localizedCaseInsensitiveContains(searchText)
+        return items.filter { item in
+            itemTitle(item).localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -18,9 +22,15 @@ import Observation
         filteredItems.isEmpty && !searchText.isEmpty
     }
 
-    init(title: String, items: [String], emptyStateText: String) {
+    init(
+        title: String,
+        items: [Item],
+        emptyStateText: String,
+        itemTitle: @escaping (Item) -> String
+    ) {
         self.title = title
         self.items = items
         self.emptyStateText = emptyStateText
+        self.itemTitle = itemTitle
     }
 }

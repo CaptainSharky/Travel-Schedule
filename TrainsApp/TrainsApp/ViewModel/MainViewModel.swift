@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 @Observable final class MainViewModel {
     enum CityDirection: Hashable {
         case from
@@ -13,7 +14,11 @@ import SwiftUI
     }
 
     var path = NavigationPath()
-    var cities: [City]
+
+    var cities: [City] = []
+    var isLoadingCities: Bool = false
+    var citiesLoadError: String?
+
     var directionPickerViewModel: DirectionPickerViewModel
     var stories: [Story] = Story.mock
 
@@ -25,31 +30,15 @@ import SwiftUI
         return !fromText.isEmpty && !toText.isEmpty
     }
 
-    init(directionPickerViewModel: DirectionPickerViewModel = DirectionPickerViewModel()) {
-        cities = citiesMockData
-        self.directionPickerViewModel = directionPickerViewModel
-    }
+    private let api: RaspAPIClient
 
-    private let citiesMockData: [City] = [
-        City(name: "Москва", stations: [
-            "Киевский вокзал",
-            "Курский вокзал",
-            "Ярославский вокзал",
-            "Белорусский вокзал",
-            "Савеловский вокзал",
-            "Ленинградский вокзал"
-        ]),
-        City(name: "Санкт Петербург", stations: [
-            "Балтийский вокзал",
-            "Московский вокзал",
-            "Ладожский вокзал"
-        ]),
-        City(name: "Сочи", stations: ["Сочи", "Адлер"]),
-        City(name: "Горный воздух", stations: ["Горный воздух"]),
-        City(name: "Краснодар", stations: ["Краснодар-1", "Краснодар-2"]),
-        City(name: "Казань", stations: ["Казань", "Казань-2"]),
-        City(name: "Омск", stations: ["Омск-Пассажирский"])
-    ]
+    init(
+        directionPickerViewModel: DirectionPickerViewModel = DirectionPickerViewModel(),
+        api: RaspAPIClient = RaspAPIClient(apiKey: AppConfig.apiKey),
+    ) {
+        self.directionPickerViewModel = directionPickerViewModel
+        self.api = api
+    }
 
     func tapFrom() {
         path.append(Route.selectCity(direction: .from))
@@ -59,19 +48,22 @@ import SwiftUI
         path.append(Route.selectCity(direction: .to))
     }
 
-    func didSelectCity(named cityName: String, for direction: CityDirection) {
-        guard let city = cities.first(where: { $0.name == cityName }) else { return }
+    func didSelectCity(_ city: City, for direction: CityDirection) {
         path.append(Route.selectStation(direction: direction, city: city))
     }
 
-    func didSelectStation(_ stationName: String, direction: CityDirection, in city: City) {
-        let fullTitle = "\(city.name) (\(stationName))"
+    func didSelectStation(_ station: Station, direction: CityDirection) {
+        let selected = DirectionPickerViewModel.SelectedStation(
+            code: station.code,
+            cityName: station.cityName,
+            stationName: station.title
+        )
 
         switch direction {
         case .from:
-            directionPickerViewModel.fromText = fullTitle
+            directionPickerViewModel.from = selected
         case .to:
-            directionPickerViewModel.toText = fullTitle
+            directionPickerViewModel.to = selected
         }
 
         path = NavigationPath()
@@ -79,13 +71,73 @@ import SwiftUI
 
     func search() {
         guard
-            let from = directionPickerViewModel.fromText,
-            let to = directionPickerViewModel.toText,
-            !from.isEmpty,
-            !to.isEmpty
+            let from = directionPickerViewModel.from,
+            let to = directionPickerViewModel.to
         else { return }
 
-        let title = "\(from) → \(to)"
+        let title = "\(from.displayTitle) → \(to.displayTitle)"
         path.append(Route.carriersList(title: title))
+
+
+    }
+
+    // MARK: - Loading
+
+    func loadCitiesIfNeeded() async {
+        guard cities.isEmpty, !isLoadingCities else { return }
+
+        isLoadingCities = true
+        citiesLoadError = nil
+        defer { isLoadingCities = false }
+
+        do {
+            async let nearest = api.fetchNearestStations(
+                lat: 55.755864,
+                lng: 37.617698,
+                distance: 50
+            )
+
+            let response = try await nearest
+            let preparedCities = Self.makeCities(from: response)
+
+            self.cities = preparedCities.sorted { $0.name < $1.name }
+        } catch {
+            self.citiesLoadError = String(describing: error)
+            self.cities = []
+        }
+    }
+
+    // MARK: - Mapping OpenAPI -> Domain
+
+    nonisolated private static func makeCities(from nearest: NearestStations) -> [City] {
+        let apiStations = nearest.stations ?? []
+
+        var grouped: [String: [Station]] = [:]
+        grouped.reserveCapacity(16)
+
+        for s in apiStations {
+            let rawTitle = (s.title ?? s.popular_title ?? s.short_title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let code = (s.code ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !rawTitle.isEmpty, !code.isEmpty else { continue }
+
+            let (city, stationName) = StationTitleParser.splitCityAndStation(from: rawTitle)
+            let station = Station(code: code, title: stationName, cityName: city)
+
+            grouped[city, default: []].append(station)
+        }
+
+        return grouped
+            .map { (cityName, stations) in
+                City(
+                    name: cityName,
+                    stations: stations.sorted { $0.title < $1.title }
+                )
+            }
     }
 }
+
+enum AppConfig {
+    static let apiKey = "bb6ebbc8-d4ec-44d1-a927-87d67ced6345"
+}
+

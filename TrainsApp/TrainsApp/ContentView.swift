@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            //testFetchAllStations()
+            testFetchNearestStations()
         }
     }
 
@@ -111,9 +111,9 @@ struct ContentView: View {
 
                 print("Fetching stations...")
                 let stations = try await service.getNearestStations(
-                    lat: 59.864177,
-                    lng: 30.319163,
-                    distance: 50
+                    lat: 55.755864,
+                    lng: 37.617698,
+                    distance: 10
                 )
 
                 print("Successfully fetched stations: \(stations)")
@@ -138,8 +138,8 @@ struct ContentView: View {
 
                 print("Fetching nearest city...")
                 let city = try await service.getNearestCity(
-                    lat: 50.453624,
-                    lng: 40.130439
+                    lat: 55.755864,
+                    lng: 37.617698
                 )
 
                 print("Successfully fetched nearest city: \(city)")

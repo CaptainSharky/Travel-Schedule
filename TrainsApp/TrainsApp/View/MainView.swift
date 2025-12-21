@@ -41,6 +41,13 @@ struct MainView: View {
                     )
                     .padding(.horizontal, 16)
 
+                    if let err = viewModel.citiesLoadError {
+                        Text("Ошибка загрузки: \(err)")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.red)
+                            .padding(.horizontal, 16)
+                    }
+
                     if viewModel.isSearchButtonEnabled {
                         Button {
                             viewModel.search()
@@ -54,6 +61,9 @@ struct MainView: View {
                         }
                     }
                 }
+            }
+            .task {
+                await viewModel.loadCitiesIfNeeded()
             }
             .fullScreenCover(isPresented: $isStoriesPresented, onDismiss: {
                 selectedStoryID = nil
@@ -70,14 +80,12 @@ struct MainView: View {
                     SelectionView(
                         viewModel: SelectionViewModel(
                             title: "Выбор города",
-                            items: viewModel.cities.map { $0.name },
-                            emptyStateText: "Город не найден"
+                            items: viewModel.cities,
+                            emptyStateText: "Город не найден",
+                            itemTitle: { $0.name }
                         ),
-                        onItemSelected: { cityName in
-                            viewModel.didSelectCity(
-                                named: cityName,
-                                for: direction
-                            )
+                        onItemSelected: { city in
+                            viewModel.didSelectCity(city, for: direction)
                         }
                     )
                     .toolbar(.hidden, for: .tabBar)
@@ -87,14 +95,11 @@ struct MainView: View {
                         viewModel: SelectionViewModel(
                             title: "Выбор станции",
                             items: city.stations,
-                            emptyStateText: "Станция не найдена"
+                            emptyStateText: "Станция не найдена",
+                            itemTitle: { $0.title }
                         ),
-                        onItemSelected: { stationName in
-                            viewModel.didSelectStation(
-                                stationName,
-                                direction: direction,
-                                in: city
-                            )
+                        onItemSelected: { station in
+                            viewModel.didSelectStation(station, direction: direction)
                         }
                     )
                     .toolbar(.hidden, for: .tabBar)

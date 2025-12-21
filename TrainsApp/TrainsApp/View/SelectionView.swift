@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct SelectionView: View {
-    @State private var viewModel: SelectionViewModel
-    let onItemSelected: (String) -> Void
+struct SelectionView<Item: Identifiable & Hashable>: View {
+    @State private var viewModel: SelectionViewModel<Item>
+    let onItemSelected: (Item) -> Void
 
     @Environment(\.dismiss) private var dismiss
 
     init(
-        viewModel: SelectionViewModel,
-        onItemSelected: @escaping (String) -> Void
+        viewModel: SelectionViewModel<Item>,
+        onItemSelected: @escaping (Item) -> Void
     ) {
         _viewModel = State(initialValue: viewModel)
         self.onItemSelected = onItemSelected
@@ -16,12 +16,12 @@ struct SelectionView: View {
 
     var body: some View {
         List {
-            ForEach(viewModel.filteredItems, id: \.self) { item in
+            ForEach(viewModel.filteredItems) { item in
                 Button {
                     onItemSelected(item)
                 } label: {
                     HStack {
-                        Text(item)
+                        Text(viewModel.itemTitle(item))
                             .font(.system(size: 17))
                             .foregroundStyle(.ypBlackDay)
                         Spacer()
@@ -74,23 +74,23 @@ struct SelectionView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        SelectionView(
-            viewModel: SelectionViewModel(
-                title: "Выбор города",
-                items: [
-                    "Москва",
-                    "Санкт Петербург",
-                    "Сочи",
-                    "Горный воздух",
-                    "Краснодар",
-                    "Казань",
-                    "Омск"
-                ],
-                emptyStateText: "Город не найден"
-            ),
-            onItemSelected: { _ in }
-        )
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        SelectionView(
+//            viewModel: SelectionViewModel(
+//                title: "Выбор города",
+//                items: [
+//                    "Москва",
+//                    "Санкт Петербург",
+//                    "Сочи",
+//                    "Горный воздух",
+//                    "Краснодар",
+//                    "Казань",
+//                    "Омск"
+//                ],
+//                emptyStateText: "Город не найден"
+//            ),
+//            onItemSelected: { _ in }
+//        )
+//    }
+//}
