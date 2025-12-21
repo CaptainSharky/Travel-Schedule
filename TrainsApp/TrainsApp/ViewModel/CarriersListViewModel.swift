@@ -4,6 +4,7 @@ import Foundation
 @MainActor
 @Observable final class CarriersListViewModel {
     let routeTitle: String
+    let apiClient: RaspAPIClient?
     var items: [CarrierRoute] = []
     var isLoading: Bool = false
     var lastError: Error? = nil
@@ -19,7 +20,6 @@ import Foundation
     }
 
     private var allItems: [CarrierRoute] = []
-    private let apiClient: RaspAPIClient?
     private let fromStationCode: String?
     private let toStationCode: String?
     private var didInitialLoad: Bool = false
@@ -39,10 +39,6 @@ import Foundation
         self.fromStationCode = nil
         self.toStationCode = nil
         self.didInitialLoad = true
-    }
-
-    func retry() {
-        reloadTrigger += 1
     }
 
     func loadIfNeeded() async throws {
@@ -115,6 +111,7 @@ private extension CarriersListViewModel {
             else { return nil }
 
             let carrier = Carrier(
+                code: apiCarrier.code.map(String.init),   // ✅
                 shortName: apiCarrier.title ?? "Перевозчик",
                 fullName: apiCarrier.title ?? "Перевозчик",
                 email: apiCarrier.email ?? "",
@@ -203,6 +200,7 @@ private extension CarriersListViewModel {
         if let code = apiCarrier.code {
             switch code {
             case 26: return "rzd_logo"
+            case 153: return "cppk_logo"
             default: break
             }
         }

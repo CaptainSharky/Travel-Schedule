@@ -3,12 +3,16 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 
 actor RaspAPIClient {
+    enum APIError: Error {
+        case missingCarrierInResponse
+    }
 
     private let client: Client
     private let apiKey: String
 
     private let nearestStationsService: NearestStationsService
     private let scheduleBetweenService: ScheduleBetweenService
+    private let carrierInfoService: CarrierInfoService
 
     init(apiKey: String) {
         self.apiKey = apiKey
@@ -22,6 +26,7 @@ actor RaspAPIClient {
 
         self.nearestStationsService = NearestStationsService(client: client, apikey: apiKey)
         self.scheduleBetweenService = ScheduleBetweenService(client: client, apikey: apiKey)
+        self.carrierInfoService = CarrierInfoService(client: client, apikey: apiKey)
     }
 
     func fetchNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations {
@@ -31,4 +36,22 @@ actor RaspAPIClient {
     func fetchScheduleBetweenStations(from: String, to: String) async throws -> ScheduleBetweenStations {
         try await scheduleBetweenService.getScheduleBetweenStations(from: from, to: to)
     }
+
+    func fetchCarrierDetails(code: String) async throws -> CarrierDetails {
+            let response = try await carrierInfoService.getCarrierInfo(code: code)
+            guard let carrier = response.carrier else {
+                throw APIError.missingCarrierInResponse
+            }
+
+            return CarrierDetails(
+                code: code,
+                title: carrier.title ?? "Перевозчик",
+                email: carrier.email ?? "",
+                phone: carrier.phone ?? "",
+                url: carrier.url ?? "",
+                logoURLString: carrier.logo ?? "",
+                address: carrier.address ?? "",
+                contacts: carrier.contacts ?? ""
+            )
+        }
 }

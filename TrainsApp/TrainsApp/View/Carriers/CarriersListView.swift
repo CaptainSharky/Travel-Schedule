@@ -19,7 +19,7 @@ struct CarriersListView: View {
 
                     ForEach(viewModel.items) { item in
                         NavigationLink {
-                            CarrierInfoView(carrier: item.carrier)
+                            CarrierInfoView(carrier: item.carrier, apiClient: viewModel.apiClient)
                         } label: {
                             CarrierRowView(item: item)
                         }
