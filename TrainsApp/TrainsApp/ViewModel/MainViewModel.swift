@@ -10,7 +10,11 @@ import SwiftUI
     enum Route: Hashable {
         case selectCity(direction: CityDirection)
         case selectStation(direction: CityDirection, city: City)
-        case carriersList(title: String)
+        case carriersList(
+            title: String,
+            from: DirectionPickerViewModel.SelectedStation,
+            to: DirectionPickerViewModel.SelectedStation
+        )
         case error(type: ErrorViewModel.ErrorType)
     }
 
@@ -20,6 +24,7 @@ import SwiftUI
     var isLoadingCities: Bool = false
     var citiesLoadError: String?
     var citiesLoadErrorType: ErrorViewModel.ErrorType?
+    var scheduleLoadErrorType: ErrorViewModel.ErrorType?
 
     var directionPickerViewModel: DirectionPickerViewModel
     var stories: [Story] = Story.mock
@@ -80,15 +85,42 @@ import SwiftUI
     }
 
     func search() {
+        Task {
+            await searchAsync()
+        }
+    }
+
+    private func searchAsync() async {
         guard
             let from = directionPickerViewModel.from,
             let to = directionPickerViewModel.to
         else { return }
 
-        let title = "\(from.displayTitle) → \(to.displayTitle)"
-        path.append(Route.carriersList(title: title))
+        do {
+            _ = try await api.fetchScheduleBetweenStations(from: from.code, to: to.code)
+            scheduleLoadErrorType = nil
+
+            let title = "\(from.displayTitle) → \(to.displayTitle)"
+            path.append(Route.carriersList(title: title, from: from, to: to))
+        } catch {
+            let type = ErrorViewModel.mapToErrorType(error)
+            scheduleLoadErrorType = type
+            path.append(Route.error(type: type))
+        }
+    }
 
 
+    func makeCarriersListViewModel(
+        title: String,
+        from: DirectionPickerViewModel.SelectedStation,
+        to: DirectionPickerViewModel.SelectedStation
+    ) -> CarriersListViewModel {
+        CarriersListViewModel(
+            routeTitle: title,
+            from: from.code,
+            to: to.code,
+            apiClient: api
+        )
     }
 
     // MARK: - Loading
@@ -117,6 +149,10 @@ import SwiftUI
             self.citiesLoadErrorType = ErrorViewModel.mapToErrorType(error)
             self.cities = []
         }
+    }
+
+    func showError(_ type: ErrorViewModel.ErrorType) {
+        path.append(Route.error(type: type))
     }
 
     // MARK: - Mapping OpenAPI -> Domain

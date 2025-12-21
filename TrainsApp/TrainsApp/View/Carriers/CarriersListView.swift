@@ -67,6 +67,14 @@ struct CarriersListView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
             }
+
+            if viewModel.isLoading {
+                ZStack {
+                    Color.black.opacity(0.15).ignoresSafeArea()
+                    ProgressView()
+                        .scaleEffect(1.2)
+                }
+            }
         }
         .overlay {
             if viewModel.shouldShowEmptyState {
@@ -91,15 +99,21 @@ struct CarriersListView: View {
             }
         }
         .tint(.ypBlackDay)
+        .task {
+            do {
+                try await viewModel.loadIfNeeded()
+            } catch {
+
+            }
+        }
+
     }
 }
 
 #Preview {
     NavigationStack {
         CarriersListView(
-            viewModel: CarriersListViewModel(
-                routeTitle: "Москва (Ярославский вокзал) → Санкт Петербург (Балтийский вокзал)"
-            )
+            viewModel: CarriersListViewModel(routeTitle: "Москва (Ярославский вокзал) → Санкт Петербург (Балтийский вокзал)", items: [])
         )
     }
 }

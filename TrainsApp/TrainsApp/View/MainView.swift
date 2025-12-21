@@ -104,13 +104,14 @@ struct MainView: View {
                     )
                     .toolbar(.hidden, for: .tabBar)
 
-                case .carriersList(let title):
-                    CarriersListView(
-                        viewModel: CarriersListViewModel(
-                            routeTitle: title
-                        )
+                case .carriersList(let title, let from, let to):
+                    let vm = viewModel.makeCarriersListViewModel(
+                        title: title,
+                        from: from,
+                        to: to
                     )
-                    .toolbar(.hidden, for: .tabBar)
+                    CarriersListView(viewModel: vm)
+                        .toolbar(.hidden, for: .tabBar)
 
                 case .error(let errorType):
                     ErrorView(viewModel: ErrorViewModel(errorType: errorType))
