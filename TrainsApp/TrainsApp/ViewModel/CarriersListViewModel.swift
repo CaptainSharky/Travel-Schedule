@@ -92,8 +92,8 @@ import Foundation
                 if !matchesTime { return false }
             }
 
-            if transfers == .no {
-                if route.hasTransfer { return false }
+            if transfers == .no && route.hasTransfer {
+                return false
             }
 
             return true

@@ -7,6 +7,13 @@ actor RaspAPIClient {
         case missingCarrierInResponse
     }
 
+    private static let serverURL: URL = {
+        guard let url = URL(string: "https://api.rasp.yandex.net") else {
+            fatalError("[RaspAPIClient]: Invalid server URL")
+        }
+        return url
+    }()
+
     private let client: Client
     private let apiKey: String
 
@@ -38,20 +45,20 @@ actor RaspAPIClient {
     }
 
     func fetchCarrierDetails(code: String) async throws -> CarrierDetails {
-            let response = try await carrierInfoService.getCarrierInfo(code: code)
-            guard let carrier = response.carrier else {
-                throw APIError.missingCarrierInResponse
-            }
-
-            return CarrierDetails(
-                code: code,
-                title: carrier.title ?? "Перевозчик",
-                email: carrier.email ?? "",
-                phone: carrier.phone ?? "",
-                url: carrier.url ?? "",
-                logoURLString: carrier.logo ?? "",
-                address: carrier.address ?? "",
-                contacts: carrier.contacts ?? ""
-            )
+        let response = try await carrierInfoService.getCarrierInfo(code: code)
+        guard let carrier = response.carrier else {
+            throw APIError.missingCarrierInResponse
         }
+
+        return CarrierDetails(
+            code: code,
+            title: carrier.title ?? "Перевозчик",
+            email: carrier.email ?? "",
+            phone: carrier.phone ?? "",
+            url: carrier.url ?? "",
+            logoURLString: carrier.logo ?? "",
+            address: carrier.address ?? "",
+            contacts: carrier.contacts ?? ""
+        )
+    }
 }
