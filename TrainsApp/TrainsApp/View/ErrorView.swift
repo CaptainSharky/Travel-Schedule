@@ -3,6 +3,8 @@ import SwiftUI
 struct ErrorView: View {
     @State private var viewModel: ErrorViewModel
 
+    @Environment(\.dismiss) private var dismiss
+
     init(viewModel: ErrorViewModel) {
         _viewModel = State(initialValue: viewModel)
     }
@@ -22,6 +24,19 @@ struct ErrorView: View {
                     .foregroundStyle(.ypBlackDay)
             }
         }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundStyle(.ypBlackDay)
+                }
+            }
+        }
+        .tint(.ypBlackDay)
     }
 }
 

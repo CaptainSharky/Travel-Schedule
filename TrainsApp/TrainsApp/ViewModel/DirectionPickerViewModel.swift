@@ -1,15 +1,23 @@
 import Observation
 
+@MainActor
 @Observable final class DirectionPickerViewModel {
-    var fromText: String?
-    var toText: String?
 
-    init(fromText: String? = nil, toText: String? = nil) {
-        self.fromText = fromText
-        self.toText = toText
+    struct SelectedStation: Hashable, Sendable {
+        let code: String
+        let cityName: String
+        let stationName: String
+
+        var displayTitle: String { "\(cityName) (\(stationName))" }
     }
 
+    var from: SelectedStation?
+    var to: SelectedStation?
+
+    var fromText: String? { from?.displayTitle }
+    var toText: String? { to?.displayTitle }
+
     func swap() {
-        Swift.swap(&fromText, &toText)
+        Swift.swap(&from, &to)
     }
 }

@@ -22,7 +22,9 @@ final class NearestStationsService: NearestStationsServiceProtocol {
             apikey: apikey,
             lat: lat,
             lng: lng,
-            distance: distance
+            distance: distance,
+            transport_types: "train,suburban",
+            limit: 30
         ))
         return try response.ok.body.json
     }
