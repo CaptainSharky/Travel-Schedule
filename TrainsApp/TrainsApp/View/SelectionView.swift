@@ -73,24 +73,3 @@ struct SelectionView<Item: Identifiable & Hashable>: View {
         .textInputAutocapitalization(.never)
     }
 }
-
-//#Preview {
-//    NavigationStack {
-//        SelectionView(
-//            viewModel: SelectionViewModel(
-//                title: "Выбор города",
-//                items: [
-//                    "Москва",
-//                    "Санкт Петербург",
-//                    "Сочи",
-//                    "Горный воздух",
-//                    "Краснодар",
-//                    "Казань",
-//                    "Омск"
-//                ],
-//                emptyStateText: "Город не найден"
-//            ),
-//            onItemSelected: { _ in }
-//        )
-//    }
-//}

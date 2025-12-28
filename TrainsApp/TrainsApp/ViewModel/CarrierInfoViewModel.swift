@@ -5,7 +5,7 @@ import Foundation
 @Observable final class CarrierInfoViewModel {
     let code: String
 
-    var details: CarrierDetails? = nil
+    var details: CarrierDetails?
     var isLoading: Bool = false
     var lastError: Error? = nil
     var reloadTrigger: Int = 0
